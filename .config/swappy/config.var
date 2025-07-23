@@ -1,0 +1,8 @@
+[Default]
+save_dir=$HOME/Pictures/screenshots
+save_filename_format=${FILENAME}
+show_panel=true
+text_font=sans-serif
+paint_mode=rectangle
+early_exit=false
+fill_shape=true
