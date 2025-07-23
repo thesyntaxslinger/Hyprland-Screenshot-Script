@@ -14,9 +14,20 @@ It supports temporary image uploads to catbox.moe and permanent ones.
 You will need a few bash utilities for the script to work, plus an AUR package.
 ```bash
 yay -Sy grimblast-git
-sudo pacman -Sy exiftool ffmpeg
+sudo pacman -Sy exiftool ffmpeg swappy
 ```
 I know ffmpeg is wayyy to bloated for this script, but I already have it installed and don't see a reason to change it right now.
+
+You will also need to grab the source and put it somewhere, as well as place the swappy config in your .config folder.
+```bash
+git clone https://github.com/thesyntaxslinger/Hyprland-Screenshot-Script
+cd Hyprland-Screenshot-Script
+mkdir -p $HOME/myscripts
+mv screenshot.sh $HOME/myscripts
+mv .conifg/swappy $HOME/.config/swappy
+cd ..
+rm -rf Hyprland-Screenshot-Script
+```
 
 
 ## Usage
