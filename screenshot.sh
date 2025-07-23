@@ -2,7 +2,7 @@
 
 mkdir -p "$HOME/Pictures/screenshots"
 
-FILENAME=$(date '+%Y-%m-%d_%H-%m-%s.png')
+FILENAME=$(date '+%Y-%m-%d_%H-%m-%S.png')
 SAVE_PATH="$HOME/Pictures/screenshots/$FILENAME"
 
 if ! grimblast --freeze copysave area "$SAVE_PATH"; then
@@ -16,13 +16,13 @@ if [ -n "$1" ]; then
     swappy -f $SAVE_PATH
 fi
 
-
 exiftool -overwrite_original -a -ALL:ALL= "$SAVE_PATH"
-wl-copy < "$SAVE_PATH"
 
-JPG_PATH="${SAVE_PATH%.*}.jpg"
-ffmpeg -v error -i "$SAVE_PATH" -q:v 2 "$JPG_PATH"
-exiftool -overwrite_original -a -ALL:ALL= "$JPG_PATH"
+make_jpeg() {
+  JPG_PATH="${SAVE_PATH%.*}.jpg"
+  ffmpeg -v error -i "$SAVE_PATH" -q:v 2 "$JPG_PATH"
+  exiftool -overwrite_original -a -ALL:ALL= "$JPG_PATH"
+}
 
 copy_to_clip() {
     if [[ $URL == http* ]]; then
@@ -34,38 +34,26 @@ copy_to_clip() {
 }
 
 
-CHOICE=$(echo -e "1. Upload to temporarily to catbox.moe\n2. Upload to permanent to catbox.moe\n3. Keep local only\n4. Delete/Cancel" | fuzzel -d -p "Screenshot Action:" | awk '{print $1}')
+CHOICE=$(echo -e "Upload temporarily to catbox.moe\nUpload permanent to catbox.moe\nKeep local only\nDelete/Cancel" | fuzzel -d)
 
 case $CHOICE in
-    "1.")
-
+    *temporarily*)
+        make_jpeg
         URL=$(curl -s -F "reqtype=fileupload" -F fileNameLength=16 -F time="1h" -F "fileToUpload=@$JPG_PATH" "https://litterbox.catbox.moe/resources/internals/api.php")
-
         copy_to_clip
-
         rm $JPG_PATH $SAVE_PATH
-
         ;;
-    "2.")
-
+    *permanent*)
+        make_jpeg
         URL=$(curl -s -F "reqtype=fileupload" -F "fileToUpload=@$JPG_PATH" "https://catbox.moe/user/api.php")
-       
         copy_to_clip
-
         rm $JPG_PATH $SAVE_PATH
-
         ;;
-    "3.")
+    Keep*)
         notify-send "Screenshot Saved" "Local copy created" -i "$SAVE_PATH"
-
-        rm $JPG_PATH
-
         ;;
     *)
-        # this was made as 4. in the menu so you can also just press escape in fuzzel and cancel that way like when using "grimblast" above
         notify-send "Screenshot Canceled" "No image captured"
-        rm $JPG_PATH $SAVE_PATH
-
+        rm $SAVE_PATH
         ;;
 esac
-
