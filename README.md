@@ -14,7 +14,7 @@ It supports temporary image uploads to catbox.moe and permanent ones.
 You will need a few bash utilities for the script to work, plus an AUR package.
 ```bash
 yay -Sy grimblast-git
-sudo pacman -Sy exiftool ffmpeg swappy
+sudo pacman -Sy exiftool ffmpeg swappy fuzzel
 ```
 I know ffmpeg is bloated for this script, but I already have it installed and don't see a reason to change it right now.
 
