@@ -20,7 +20,7 @@ exiftool -overwrite_original -a -ALL:ALL= "$SAVE_PATH"
 
 make_jpeg() {
   JPG_PATH="${SAVE_PATH%.*}.jpg"
-  ffmpeg -v error -i "$SAVE_PATH" -q:v 2 "$JPG_PATH"
+  ffmpeg -v error -i "$SAVE_PATH" -q:v 5 "$JPG_PATH"
   exiftool -overwrite_original -a -ALL:ALL= "$JPG_PATH"
 }
 
@@ -33,31 +33,10 @@ copy_to_clip() {
     fi
 }
 
-mydomain_base() {
-  make_jpeg
-  sleep 1
-  scp "$JPG_PATH" "host:/var/www/html/files.mydomain.com/u/$uploading_filename"
-  echo "https://mydomain.com/u/$uploading_filename" | wl-copy
-  notify-send "Upload Successful!" "URL copied to clipboard" -i "$SAVE_PATH"
-  rm $JPG_PATH $SAVE_PATH
-}
 
-
-CHOICE=$(echo -e "Upload 1 hour to mydomain.com\nUpload 2 days to mydomain.com\nUpload 1 month to mydomain.com\nUpload temporarily to catbox.moe\nUpload permanent to catbox.moe\nKeep local only\nDelete/Cancel" | fuzzel -d)
+CHOICE=$(echo -e "Upload temporarily to catbox.moe\nUpload permanent to catbox.moe\nKeep local only\nDelete/Cancel" | fuzzel -d)
 
 case $CHOICE in
-    *hour*mydomain*)
-      uploading_filename=1h$(cat /dev/urandom | tr -dc 'a-z0-9' | head -c 30).jpg
-      mydomain_base
-      ;;
-    *day*mydomain*)
-      uploading_filename=2d$(cat /dev/urandom | tr -dc 'a-z0-9' | head -c 30).jpg
-      mydomain_base
-      ;;
-    *month*mydomain*)
-      uploading_filename=1m$(cat /dev/urandom | tr -dc 'a-z0-9' | head -c 30).jpg
-      mydomain_base
-      ;;
     *temporarily*)
         make_jpeg
         URL=$(curl -s -F "reqtype=fileupload" -F fileNameLength=16 -F time="1h" -F "fileToUpload=@$JPG_PATH" "https://litterbox.catbox.moe/resources/internals/api.php")
@@ -70,7 +49,12 @@ case $CHOICE in
         copy_to_clip
         rm $JPG_PATH $SAVE_PATH
         ;;
-    Keep*)
+    "Keep local only")
+        make_jpeg
+        notify-send "Screenshot Saved" "Local copy created" -i "$SAVE_PATH"
+        rm $SAVE_PATH
+        ;;
+    *lossless*)
         notify-send "Screenshot Saved" "Local copy created" -i "$SAVE_PATH"
         ;;
     *)
