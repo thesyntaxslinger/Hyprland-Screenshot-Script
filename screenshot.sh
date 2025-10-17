@@ -20,7 +20,7 @@ exiftool -overwrite_original -a -ALL:ALL= "$SAVE_PATH"
 
 make_jpeg() {
   JPG_PATH="${SAVE_PATH%.*}.jpg"
-  ffmpeg -v error -i "$SAVE_PATH" -q:v 5 "$JPG_PATH"
+  ffmpeg -v error -i "$SAVE_PATH" -q:v 3 "$JPG_PATH"
   exiftool -overwrite_original -a -ALL:ALL= "$JPG_PATH"
 }
 
