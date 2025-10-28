@@ -55,6 +55,7 @@ case $CHOICE in
         rm $SAVE_PATH
         ;;
     *lossless*)
+        wl-copy < "$SAVE_PATH"
         notify-send "Screenshot Saved" "Local copy created" -i "$SAVE_PATH"
         ;;
     *)
