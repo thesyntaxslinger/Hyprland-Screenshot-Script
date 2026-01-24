@@ -2,7 +2,7 @@
 
 mkdir -p "$HOME/Pictures/screenshots"
 
-FILENAME=$(date '+%Y-%m-%d_%H-%m-%S.png')
+FILENAME=$(date -u --rfc-3339 s).png
 SAVE_PATH="$HOME/Pictures/screenshots/$FILENAME"
 
 if ! grimblast copysave area "$SAVE_PATH"; then
@@ -34,7 +34,7 @@ copy_to_clip() {
 }
 
 
-CHOICE=$(echo -e "Upload temporarily to catbox.moe\nUpload permanent to catbox.moe\nKeep local only\nDelete/Cancel" | fuzzel -d)
+CHOICE=$(echo -e "Upload temporarily to catbox.moe\nUpload permanent to catbox.moe\nKeep local only (jpeg)\nKeep local only (lossless)\nDelete/Cancel" | fuzzel -d)
 
 case $CHOICE in
     *temporarily*)
@@ -49,14 +49,15 @@ case $CHOICE in
         copy_to_clip
         rm $JPG_PATH $SAVE_PATH
         ;;
-    "Keep local only")
+    *jpeg*)
         make_jpeg
-        notify-send "Screenshot Saved" "Local copy created" -i "$SAVE_PATH"
-        rm $SAVE_PATH
+        echo "file://$JPG_PATH" | wl-copy --type text/uri-list
+        notify-send "Screenshot Saved" "Local copy created (jpeg)" -i "$JPG_PATH"
+        rm "$SAVE_PATH"
         ;;
     *lossless*)
         wl-copy < "$SAVE_PATH"
-        notify-send "Screenshot Saved" "Local copy created" -i "$SAVE_PATH"
+        notify-send "Screenshot Saved" "Local copy created (lossless)" -i "$SAVE_PATH"
         ;;
     *)
         notify-send "Screenshot Canceled" "No image captured"
