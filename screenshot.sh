@@ -11,9 +11,9 @@ if ! grimblast copysave area "$SAVE_PATH"; then
 fi
 
 if [ -n "$1" ]; then
-    export FILENAME=$FILENAME
+    export FILENAME="$FILENAME"
     envsubst < $HOME/.config/swappy/config.var > $HOME/.config/swappy/config
-    swappy -f $SAVE_PATH
+    swappy -f "$SAVE_PATH"
 fi
 
 exiftool -overwrite_original -a -ALL:ALL= "$SAVE_PATH"
